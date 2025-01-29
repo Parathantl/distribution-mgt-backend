@@ -1,7 +1,10 @@
 import express from "express";
 import router from "./routes";
+const cors = require("cors");
 
 const app = express();
+
+app.use(cors());
 
 // middleware to parse JSON
 app.use(express.json());
