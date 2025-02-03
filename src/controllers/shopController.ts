@@ -3,13 +3,13 @@ import { createShop, getAllShops, getShopById, updateShop, deleteShop } from "..
 
 export const createShopHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, location } = req.body;
-    if (!name || !location) {
+    const { name, location, phone_number } = req.body;
+    if (!name || !location || !phone_number) {
       res.status(400).json({ error: "Shop name and location are required" });
       return;
     }
 
-    const shop = await createShop(name, location);
+    const shop = await createShop(name, location, phone_number);
     res.status(201).json(shop);
   } catch (error) {
     res.status(500).json({ error: "Error creating shop" });

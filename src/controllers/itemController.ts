@@ -3,13 +3,13 @@ import { createItem, getAllItems, getItemById, updateItem, deleteItem } from "..
 
 export const createItemHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { itemName, unitPrice, mrp, stock } = req.body;
-    if (!itemName || unitPrice === undefined || stock === undefined) {
+    const { itemName, unitPrice, mrp, expiryDate, stock } = req.body;
+    if (!itemName || unitPrice === undefined || stock === undefined || mrp === undefined || expiryDate === undefined) {
       res.status(400).json({ error: "Item name, unit price, and in-stock status are required" });
       return;
     }
 
-    const item = await createItem(itemName, unitPrice, mrp, stock);
+    const item = await createItem(itemName, unitPrice, mrp, expiryDate, stock);
     res.status(201).json(item);
   } catch (error) {
     res.status(500).json({ error: "Error creating item" });

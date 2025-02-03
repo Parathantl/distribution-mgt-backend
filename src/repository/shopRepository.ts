@@ -1,9 +1,9 @@
 import { query } from './../database';
 
-export const createShop = async (shopName: string, location: string) => {
+export const createShop = async (shopName: string, location: string, phone_number: string) => {
   const result = await query(
-    "INSERT INTO shops (shop_name, location) VALUES ($1, $2) RETURNING *",
-    [shopName, location]
+    "INSERT INTO shops (shop_name, location, phone_number) VALUES ($1, $2, $3) RETURNING *",
+    [shopName, location, phone_number]
   );
   return result.rows[0];
 };

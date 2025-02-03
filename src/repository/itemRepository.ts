@@ -1,9 +1,9 @@
 import { query } from "../database";
 
-export const createItem = async (itemName: string, unitPrice: number, mrp: number, stock: boolean) => {
+export const createItem = async (itemName: string, unitPrice: number, mrp: number, expiryDate: Date, stock: boolean) => {
   const result = await query(
-    "INSERT INTO items (item_name, unit_price, mrp, stock) VALUES ($1, $2, $3, $4) RETURNING *",
-    [itemName, unitPrice, mrp, stock]
+    "INSERT INTO items (item_name, unit_price, mrp, expiry_date, stock) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    [itemName, unitPrice, mrp, expiryDate, stock]
   );
   return result.rows[0];
 };
