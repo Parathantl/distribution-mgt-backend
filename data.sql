@@ -1,7 +1,15 @@
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT null,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
 CREATE TABLE shops (
     id SERIAL PRIMARY KEY,
     shop_name VARCHAR(255) NOT NULL,
     location VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(15) not null,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -11,15 +19,18 @@ CREATE TABLE items (
     unit_price DECIMAL(10,2) NOT NULL,
     mrp DECIMAL(10,2) NOT NULL,
     stock DECIMAL(10,2) NOT NULL,
+    expiry_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE invoices (
     id SERIAL PRIMARY KEY,
     shop_id INT NOT NULL,
+    user_id INT NOT NULL,
     total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE
+    FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE invoice_items (
@@ -33,17 +44,9 @@ CREATE TABLE invoice_items (
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE roles (
     role_id SERIAL PRIMARY KEY,
     role_name VARCHAR(50) UNIQUE NOT NULL
-);
-
-CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT null,
-    email VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE user_roles (
