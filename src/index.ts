@@ -1,12 +1,16 @@
 import express from "express";
 import router from "./routes";
+import cookieParser from 'cookie-parser';
 const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // your front-end's domain (e.g., http://localhost:3001)
+    credentials: true, // Allow sending credentials (cookies, headers, etc.)
+  }));
 
-// middleware to parse JSON
+app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api', router)

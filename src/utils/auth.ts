@@ -9,11 +9,11 @@ export interface CustomRequest extends Request {
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
  try {
-   const token = req.header('Authorization')?.replace('Bearer ', '');
-
-   if (!token) {
-     throw new Error();
-   }
+  const token = req.cookies.auth_token;
+  if (!token) {
+    res.status(401).send('Not authenticated');
+    return;
+  }
 
    const decoded = jwt.verify(token, SECRET_KEY);
    (req as CustomRequest).token = decoded;
@@ -30,4 +30,28 @@ export function generateToken(user: any): string {
       });
   
         return token;
+}
+
+export const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
+
+  try {
+      const token = req.cookies.auth_token;
+      if (!token) {
+        res.status(401).send('Not authenticated');
+        return;
+      }
+      const decoded = jwt.verify(token, SECRET_KEY);
+
+      if (decoded) {
+          res.status(200).send('Authenticated');
+          return;
+      }else {
+          res.status(401).send('Invalid token');
+          return;
+      }
+
+    } catch (err) {
+        res.status(401).send('Please authenticate');
+        return;
+    }
 }

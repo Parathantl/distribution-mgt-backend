@@ -63,8 +63,17 @@ export async function loginUser(req: Request, res: Response) {
     // if password is correct return token
     const token = generateToken(user);
     const { user_id, username, email } = user;
- 
-    res.status(200).send({ user: { user_id, username, email }, token: token });
+
+    // Set token in HTTP-only cookie for better security
+    res.cookie('auth_token', token, {
+        httpOnly: true,
+        secure: false,        // False for local development (HTTP)
+        sameSite: 'lax',      // 'lax' is safer and works over HTTP
+        maxAge: 2 * 24 * 60 * 60 * 1000
+    });      
+    
+    res.status(200).send({ user: { user_id, username, email } });
+    return;
 }
 
 // Function to get user details
