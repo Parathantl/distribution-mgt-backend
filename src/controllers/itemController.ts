@@ -47,15 +47,16 @@ export const getItemByIdHandler = async (req: Request, res: Response): Promise<v
 
 export const updateItemHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = Number(req.params.id);
-    const { itemName, unitPrice, inStock } = req.body;
+    const id = String(req.params.id);
 
-    if (isNaN(id) || !itemName || unitPrice === undefined || inStock === undefined) {
+    const { itemName, unitPrice, mrp, expiryDate, stock } = req.body;
+
+    if (isNaN(Number(id)) || !itemName || unitPrice === undefined || stock === undefined || mrp === undefined || expiryDate === undefined) {
       res.status(400).json({ error: "Valid item ID, name, price, and stock status are required" });
       return;
     }
 
-    const updatedItem = await updateItem(id, itemName, unitPrice, inStock);
+    const updatedItem = await updateItem(id, itemName, unitPrice, mrp, expiryDate, stock);
     if (!updatedItem) {
       res.status(404).json({ error: "Item not found" });
       return;

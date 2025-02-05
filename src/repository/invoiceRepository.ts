@@ -15,6 +15,20 @@ export const createInvoiceItem = async (invoiceId: number, itemId: number, quant
   );
 };
 
+export const updateCreateItemStock = async (item_id: number, quantity: number) => {
+  const query1 = `UPDATE items 
+                 SET stock = stock - $1
+                 WHERE id = $2 AND stock >= $1
+                  RETURNING id`;
+
+  const { rows } = await query(query1, [quantity, item_id]);
+
+  if (rows.length === 0) {
+    throw new Error(`Insufficient stock for item ID: ${item_id}`);
+  }
+};
+
+
 export const getInvoiceItems = async (invoiceId: number) => {
     const result = await query(
       `SELECT 
@@ -30,6 +44,15 @@ export const getInvoiceItems = async (invoiceId: number) => {
     );
     return result.rows;
 };
+
+export const getInvoiceItemsInfo = async (invoiceId: number) => {
+  const result = await query(
+    "SELECT item_id, quantity FROM invoice_items WHERE invoice_id = $1",
+    [invoiceId]
+  );
+  return result.rows;
+};
+
 
 export const getInvoices = async () => {
   const result = await query(
@@ -74,6 +97,13 @@ export const updateInvoiceTotal = async (invoiceId: number) => {
      SET total_amount = (SELECT COALESCE(SUM(total_price), 0) FROM invoice_items WHERE invoice_id = $1) 
      WHERE id = $1`,
     [invoiceId]
+  );
+};
+
+export const updateItemStock = async (itemId: number, quantity: number) => {
+  await query(
+    "UPDATE items SET stock = stock + $1 WHERE id = $2",
+    [quantity, itemId]
   );
 };
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createInvoice, createInvoiceItem, getInvoices, getInvoiceById, deleteInvoice, getInvoiceItems } from "../repository/invoiceRepository";
+import { createInvoice, createInvoiceItem, getInvoices, getInvoiceById, deleteInvoice, getInvoiceItems, updateCreateItemStock, updateItemStock, getInvoiceItemsInfo } from "../repository/invoiceRepository";
 import { CustomRequest } from "../utils/auth";
 
 interface InvoiceItem {
@@ -23,6 +23,7 @@ export const createInvoiceHandler = async (req: Request, res: Response) => {
     const invoiceItemsPromises = items.map(async (item: InvoiceItem) => {
       const { item_id, quantity, unit_price } = item;
       await createInvoiceItem(invoice_id, item_id, quantity, unit_price);
+      await updateCreateItemStock(item_id, quantity);
     });
 
     await Promise.all(invoiceItemsPromises);
@@ -57,11 +58,23 @@ export const getInvoiceByIdHandler = async (req: Request, res: Response) => {
 };
 
 export const deleteInvoiceHandler = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
-    await deleteInvoice(Number(id));
-    res.json({ message: "Invoice deleted successfully" });
+    const invoiceId = Number(id);
+
+    const invoiceItems = await getInvoiceItemsInfo(invoiceId);
+
+    const updateStockPromises = invoiceItems.map(async (item) => {
+      await updateItemStock(item.item_id, item.quantity);
+    });
+    await Promise.all(updateStockPromises);
+
+    await deleteInvoice(invoiceId);
+
+    res.json({ message: "Invoice and related items deleted successfully" });
   } catch (error) {
+    console.error("Error deleting invoice:", error);
     res.status(500).json({ error: "Error deleting invoice" });
   }
 };
