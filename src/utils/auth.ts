@@ -4,7 +4,9 @@ import { Request, Response, NextFunction } from 'express';
 export const SECRET_KEY: Secret = 'secretkey';
 
 export interface CustomRequest extends Request {
- token: string | JwtPayload;
+  token: {
+    _id: string;
+  };
 }
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +17,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
-   const decoded = jwt.verify(token, SECRET_KEY);
+   const decoded = jwt.verify(token, SECRET_KEY) as { _id: string; name: string; iat: number; exp: number; };
    (req as CustomRequest).token = decoded;
 
    next();

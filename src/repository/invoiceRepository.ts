@@ -1,9 +1,9 @@
 import { query } from './../database';
 
-export const createInvoice = async (shopId: number, totalAmount: number) => {
+export const createInvoice = async (shopId: number, totalAmount: number, user_id: string) => {
   const result = await query(
-    'INSERT INTO invoices (shop_id, total_amount) VALUES ($1, $2) RETURNING id',
-    [shopId, totalAmount]
+    'INSERT INTO invoices (shop_id, total_amount, user_id) VALUES ($1, $2, $3) RETURNING id',
+    [shopId, totalAmount, user_id]
   );
     return result.rows[0].id;
 };
@@ -46,14 +46,23 @@ export const getInvoices = async () => {
 
 export const getInvoiceById = async (id: number) => {
   const result = await query(
-    `SELECT i.id, i.shop_id, s.shop_name, i.total_amount, i.created_at, 
-     json_agg(json_build_object('item_id', ii.item_id, 'item_name', it.item_name, 'quantity', ii.quantity, 'unit_price', ii.unit_price, 'total_price', ii.total_price)) AS items
+    `SELECT i.id, i.shop_id, s.shop_name, s.location, i.total_amount, i.created_at, 
+     json_agg(
+       json_build_object(
+         'item_id', ii.item_id, 
+         'item_name', it.item_name, 
+         'quantity', ii.quantity, 
+         'mrp', it.mrp,
+         'unit_price', ii.unit_price, 
+         'total_price', ii.total_price
+       )
+     ) AS items
      FROM invoices i
      JOIN shops s ON i.shop_id = s.id
      JOIN invoice_items ii ON i.id = ii.invoice_id
      JOIN items it ON ii.item_id = it.id
      WHERE i.id = $1
-     GROUP BY i.id, s.shop_name`,
+     GROUP BY i.id, s.shop_name, s.location`,
     [id]
   );
   return result.rows[0];

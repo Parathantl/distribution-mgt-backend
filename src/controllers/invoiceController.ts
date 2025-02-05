@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createInvoice, createInvoiceItem, getInvoices, getInvoiceById, deleteInvoice, getInvoiceItems } from "../repository/invoiceRepository";
+import { CustomRequest } from "../utils/auth";
 
 interface InvoiceItem {
   item_id: number;
@@ -8,32 +9,28 @@ interface InvoiceItem {
 }
 
 export const createInvoiceHandler = async (req: Request, res: Response) => {
-    const { shop, items, totalAmount} = req.body;
+  const { shop, items, totalAmount } = req.body;
+  const user_id = (req as CustomRequest).token._id;
 
-    if (!shop || !items || items.length === 0) {
-        res.status(400).json({ error: 'Shop ID and at least one item are required' });
-        return;
-    }
+  if (!shop || !items || items.length === 0) {
+    res.status(400).json({ error: 'Shop ID and at least one item are required' });
+    return;
+  }
 
-    try {
-        try {
-            const invoice_id = await createInvoice(shop, totalAmount);
+  try {
+    const invoice_id = await createInvoice(shop, totalAmount, user_id);
 
-            const invoiceItemsPromises: Promise<void>[] = items.map(async (item: InvoiceItem): Promise<void> => {
-              const { item_id, quantity, unit_price } = item;
+    const invoiceItemsPromises = items.map(async (item: InvoiceItem) => {
+      const { item_id, quantity, unit_price } = item;
+      await createInvoiceItem(invoice_id, item_id, quantity, unit_price);
+    });
 
-              await createInvoiceItem(invoice_id, item_id, quantity, unit_price);
-            });
+    await Promise.all(invoiceItemsPromises);
 
-            await Promise.all(invoiceItemsPromises);
-
-            res.status(201).json({ message: 'Invoice created successfully', invoice_id });
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to create invoice', details: (error as Error).message });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Database connection error', details: (error as Error).message });
-    }
+    res.status(201).json({ message: 'Invoice created successfully', invoice_id });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create invoice', details: (error as Error).message });
+  }
 };
 
 export const getInvoicesHandler = async (_req: Request, res: Response) => {
