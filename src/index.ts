@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173', // your front-end's domain (e.g., http://localhost:3001)
+    origin: 'https://unrivaled-dasik-786ff0.netlify.app', // your front-end's domain (e.g., http://localhost:3001)
     credentials: true, // Allow sending credentials (cookies, headers, etc.)
   }));
 
