@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import { Secret } from 'jsonwebtoken';
-require('dotenv').config
+require("dotenv").config();
 
 export const SECRET_KEY: Secret = process.env.JWT_SECRET!;
 
