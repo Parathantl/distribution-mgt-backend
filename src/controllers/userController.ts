@@ -67,8 +67,8 @@ export async function loginUser(req: Request, res: Response) {
     // Set token in HTTP-only cookie for better security
     res.cookie('auth_token', token, {
         httpOnly: true,
-        secure: true,        // False for local development (HTTP)
-        sameSite: 'none',      // 'lax' is safer and works over HTTP
+        secure: false,        // False for local development (HTTP)
+        sameSite: 'lax',      // 'lax' is safer and works over HTTP
         maxAge: 2 * 24 * 60 * 60 * 1000
     });      
     
