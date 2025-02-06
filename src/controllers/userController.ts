@@ -65,12 +65,12 @@ export async function loginUser(req: Request, res: Response) {
     const { user_id, username, email } = user;
 
     // Set token in HTTP-only cookie for better security
-    res.cookie('auth_token', token, {
-        httpOnly: true,
-        secure: false,        // False for local development (HTTP)
-        sameSite: 'lax',      // 'lax' is safer and works over HTTP
-        maxAge: 2 * 24 * 60 * 60 * 1000
-    });      
+    res.cookie("auth_token", token, {
+            httpOnly: true, // ✅ Prevents access from JavaScript (security best practice)
+            secure: true, // ✅ Required for HTTPS (Netlify uses HTTPS by default)
+            sameSite: "none", // ✅ Allows cross-site cookies
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // ✅ Ensures cookie persists for 7 days
+        });
     
     res.status(200).send({ user: { user_id, username, email } });
     return;
