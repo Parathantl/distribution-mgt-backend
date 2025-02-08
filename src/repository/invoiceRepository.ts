@@ -85,7 +85,7 @@ export const getInvoiceById = async (id: number) => {
      JOIN invoice_items ii ON i.id = ii.invoice_id
      JOIN items it ON ii.item_id = it.id
      WHERE i.id = $1
-     GROUP BY i.id, s.shop_name, s.location`,
+     GROUP BY i.id, s.shop_name, s.location, s.phone_number`,
     [id]
   );
   return result.rows[0];
