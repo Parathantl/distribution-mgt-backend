@@ -69,7 +69,7 @@ export const getInvoices = async () => {
 
 export const getInvoiceById = async (id: number) => {
   const result = await query(
-    `SELECT i.id, i.shop_id, s.shop_name, s.location, i.total_amount, i.created_at, 
+    `SELECT i.id, i.shop_id, s.shop_name, s.location, s.phone_number, i.total_amount, i.created_at, 
      json_agg(
        json_build_object(
          'item_id', ii.item_id, 

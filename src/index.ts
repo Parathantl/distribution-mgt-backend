@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-    origin: ['https://unrivaled-dasik-786ff0.netlify.app', 'http://localhost:3000', 'https://distribution-mgt-frontend.onrender.com'],
+    origin: ['http://localhost:5173/', 'https://distribution-mgt-frontend.onrender.com'],
     credentials: true, // Allow sending credentials (cookies, headers, etc.)
   }));
 
